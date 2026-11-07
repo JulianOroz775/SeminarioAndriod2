@@ -24,6 +24,8 @@ class MovieViewModel(
     val errorMessage: LiveData<String?> = _errorMessage
 
     private val _isEmptySearch = MutableLiveData(false)
+    private val _isPaginationError = MutableLiveData(false)
+    val isPaginationError: LiveData<Boolean> = _isPaginationError
     val isEmptySearch: LiveData<Boolean> = _isEmptySearch
 
     private var currentPage = 0
@@ -46,6 +48,7 @@ class MovieViewModel(
 
         _movies.value = emptyList()
         _isEmptySearch.value = false
+        _isPaginationError.value = false
 
         loadPopularPage(1, append = false)
     }
@@ -63,6 +66,7 @@ class MovieViewModel(
         isLoadingMore = true
         _isLoading.value = true
         _errorMessage.value = null
+        _isPaginationError.value = false
 
         val version = requestVersion
 
@@ -83,6 +87,8 @@ class MovieViewModel(
                     }
                     .onFailure { error ->
                         if (version != requestVersion) return@onFailure
+
+                        _isPaginationError.value = append
                         _errorMessage.value = error.message
                     }
             } catch (error: CancellationException) {
@@ -108,6 +114,7 @@ class MovieViewModel(
         currentJob?.cancel()
         isLoadingMore = false
         isSearching = true
+        _isPaginationError.value = false
 
         val version = requestVersion
 

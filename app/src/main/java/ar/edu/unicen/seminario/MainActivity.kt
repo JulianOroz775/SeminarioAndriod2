@@ -1,3 +1,4 @@
+
 package ar.edu.unicen.seminario
 
 import android.content.Intent
@@ -20,7 +21,6 @@ import ar.edu.unicen.seminario.repository.MovieRepository
 import ar.edu.unicen.seminario.ui.movies.MovieAdapter
 import ar.edu.unicen.seminario.viewmodel.MovieViewModel
 import ar.edu.unicen.seminario.viewmodel.MovieViewModelFactory
-import retrofit2.HttpException
 
 class MainActivity : AppCompatActivity() {
 
@@ -93,6 +93,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         val token = BuildConfig.TMDB_READ_ACCESS_TOKEN
+
         if (token.isBlank()) {
             showError(getString(R.string.missing_token_error))
             return
@@ -113,7 +114,9 @@ class MainActivity : AppCompatActivity() {
         buttonRetry.setOnClickListener {
             val query = editSearchMovie.text.toString().trim()
 
-            if (query.isBlank()) {
+            if (viewModel.isPaginationError.value == true) {
+                viewModel.loadNextPopularPage()
+            } else if (query.isBlank()) {
                 viewModel.loadPopularMovies()
             } else {
                 viewModel.searchMovies(query)
@@ -180,7 +183,10 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.errorMessage.observe(this) { message ->
             if (!message.isNullOrBlank()) {
-                showError(mapErrorMessage(message))
+                showError(
+                    mapErrorMessage(message),
+                    viewModel.isPaginationError.value == true
+                )
             } else {
                 layoutError.visibility = View.GONE
             }
@@ -195,26 +201,30 @@ class MainActivity : AppCompatActivity() {
     private fun mapErrorMessage(message: String): String {
         return when {
             message.contains("Unable to resolve host", ignoreCase = true) ||
-                message.contains("Failed to connect", ignoreCase = true) ->
+                    message.contains("Failed to connect", ignoreCase = true) ->
                 getString(R.string.network_error)
 
             message.contains("timeout", ignoreCase = true) ->
                 getString(R.string.timeout_error)
 
             message.contains("500") ||
-                message.contains("502") ||
-                message.contains("503") ||
-                message.contains("504") ->
+                    message.contains("502") ||
+                    message.contains("503") ||
+                    message.contains("504") ->
                 getString(R.string.server_error)
 
             else -> getString(R.string.unknown_error)
         }
     }
 
-    private fun showError(message: String) {
+    private fun showError(message: String, keepMovies: Boolean = false) {
         textError.text = message
         layoutError.visibility = View.VISIBLE
-        recyclerMovies.visibility = View.GONE
+
+        if (!keepMovies) {
+            recyclerMovies.visibility = View.GONE
+        }
+
         textEmptySearch.visibility = View.GONE
         progressLoading.visibility = View.GONE
     }
@@ -223,6 +233,7 @@ class MainActivity : AppCompatActivity() {
         searchRunnable?.let {
             searchHandler.removeCallbacks(it)
         }
+
         super.onDestroy()
     }
 }

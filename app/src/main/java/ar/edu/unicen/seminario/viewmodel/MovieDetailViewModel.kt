@@ -24,29 +24,41 @@ class MovieDetailViewModel(
     val error: LiveData<Throwable?> = _error
 
     private var loadJob: Job? = null
+    private var requestVersion = 0
 
     fun loadMovieDetails(movieId: Int) {
+        requestVersion++
+        val version = requestVersion
+
         loadJob?.cancel()
 
-        loadJob = viewModelScope.launch {
-            _isLoading.value = true
-            _error.value = null
-            _movie.value = null
+        _isLoading.value = true
+        _error.value = null
+        _movie.value = null
 
+        loadJob = viewModelScope.launch {
             try {
                 repository.getMovieDetails(movieId)
                     .onSuccess { detail ->
-                        _movie.value = detail
+                        if (version == requestVersion) {
+                            _movie.value = detail
+                        }
                     }
                     .onFailure { throwable ->
-                        _error.value = throwable
+                        if (version == requestVersion) {
+                            _error.value = throwable
+                        }
                     }
             } catch (exception: CancellationException) {
                 throw exception
             } catch (exception: Exception) {
-                _error.value = exception
+                if (version == requestVersion) {
+                    _error.value = exception
+                }
             } finally {
-                _isLoading.value = false
+                if (version == requestVersion) {
+                    _isLoading.value = false
+                }
             }
         }
     }
