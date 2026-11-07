@@ -4,13 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/screenBackgroundColor">
 
     <TextView
         android:id="@+id/textWishlistTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mis deseados"
+        android:text="@string/wishlist"
+        android:textColor="@color/textPrimaryColor"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="16dp" />
@@ -19,7 +21,8 @@
         android:id="@+id/textWishlistEmpty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Todavía no guardaste películas."
+        android:text="@string/empty_wishlist"
+        android:textColor="@color/textSecondaryColor"
         android:textSize="16sp"
         android:gravity="center"
         android:visibility="gone"

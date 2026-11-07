@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ar.edu.unicen.seminario.R
 import ar.edu.unicen.seminario.model.Movie
 import com.bumptech.glide.Glide
+import java.util.Locale
 
 class MovieAdapter(
     private val onMovieClick: (Movie) -> Unit,
@@ -70,7 +71,22 @@ class MovieAdapter(
 
         fun bind(movie: Movie) {
             title.text = movie.title
-            rating.text = "⭐ %.1f".format(movie.vote_average)
+
+            val formattedRating = String.format(
+                Locale.getDefault(),
+                "%.1f",
+                movie.vote_average
+            )
+
+            rating.text = itemView.context.getString(
+                R.string.movie_rating,
+                formattedRating
+            )
+
+            poster.contentDescription = itemView.context.getString(
+                R.string.movie_poster_description,
+                movie.title
+            )
 
             val posterUrl = movie.poster_path?.let {
                 "https://image.tmdb.org/t/p/w500$it"

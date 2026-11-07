@@ -8,3 +8,4 @@ data class Movie(
     val vote_average: Double,
     val genre_ids: List<Int> = emptyList()
 )
+

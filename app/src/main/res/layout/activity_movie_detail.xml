@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="@color/screenBackgroundColor">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,7 +24,7 @@
             android:layout_width="200dp"
             android:layout_height="300dp"
             android:layout_gravity="center"
-            android:contentDescription="Póster de la película"
+            android:contentDescription="@string/movie_poster_description"
             android:scaleType="centerCrop" />
 
         <TextView
@@ -30,16 +32,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Título de la película"
+            android:textColor="@color/textPrimaryColor"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="Movie title" />
 
         <TextView
             android:id="@+id/textDetailRating"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Calificación"
+            android:text="@string/movie_rating"
+            android:textColor="@color/textSecondaryColor"
             android:textSize="16sp" />
 
         <Button
@@ -47,21 +51,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="♡ Agregar a deseados" />
+            android:text="@string/add_to_wishlist" />
 
         <TextView
             android:id="@+id/textDetailGenres"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Géneros"
+            android:text="@string/movie_genres"
+            android:textColor="@color/textSecondaryColor"
             android:textSize="16sp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Sinopsis"
+            android:text="@string/movie_overview"
+            android:textColor="@color/textPrimaryColor"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -70,7 +76,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Descripción de la película"
+            android:textColor="@color/textPrimaryColor"
             android:textSize="16sp" />
 
         <LinearLayout
@@ -85,14 +91,14 @@
                 android:id="@+id/textDetailError"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="No se pudo cargar la película"
+                android:textColor="@color/textPrimaryColor"
                 android:textSize="16sp" />
 
             <Button
                 android:id="@+id/buttonDetailRetry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Reintentar" />
+                android:text="@string/retry" />
 
         </LinearLayout>
 

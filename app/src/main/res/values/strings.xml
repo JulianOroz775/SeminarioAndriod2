@@ -1,5 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Seminario</string>
-    <string name="hello_word">Hello Word!</string>
-    <string name="movie_poster_description">Portada de la película</string>
+    <!-- General -->
+    <string name="app_name">CineScope</string>
+    <string name="hello_word">Hello World!</string>
+
+    <!-- Home -->
+    <string name="home_title">Discover your next movie</string>
+    <string name="popular_movies">Popular movies</string>
+    <string name="wishlist">Wishlist</string>
+    <string name="search_movies_hint">Search movies…</string>
+    <string name="clear_search">Clear search</string>
+
+    <!-- Movie list states -->
+    <string name="empty_movies">No movies to display.</string>
+    <string name="empty_search">No results found for your search.</string>
+    <string name="empty_wishlist">Your wishlist is empty.</string>
+    <string name="loading_movies">Loading movies…</string>
+    <string name="loading_details">Loading movie details…</string>
+    <string name="loading_wishlist">Loading wishlist…</string>
+
+    <!-- Movie details -->
+    <string name="movie_overview">Overview</string>
+    <string name="movie_genres">Genres</string>
+    <string name="movie_genres_label">Genres:</string>
+    <string name="no_overview">No overview available.</string>
+    <string name="wishlist_button_accessibility">Toggle wishlist</string>
+    <string name="movie_rating">Rating: %1$s out of 10</string>
+    <string name="movie_poster_description">Poster of %1$s</string>
+    <string name="add_to_wishlist">Add to wishlist</string>
+    <string name="remove_from_wishlist">Remove from wishlist</string>
+
+    <!-- Actions -->
+    <string name="retry">Retry</string>
+    <string name="back">Back</string>
+
+    <!-- Errors -->
+    <string name="missing_token_error">TMDB access token is missing in local.properties.</string>
+    <string name="generic_error">Something went wrong while loading the information.</string>
+    <string name="network_error">Could not connect. Check your internet connection.</string>
+    <string name="timeout_error">The request timed out. Please try again.</string>
+    <string name="server_error">The server is temporarily unavailable. Please try again later.</string>
+    <string name="unknown_error">An unexpected error occurred.</string>
 </resources>

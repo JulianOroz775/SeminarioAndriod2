@@ -2,6 +2,26 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="red">#FFFF0000</color>
-    <color name="blue">#FF000BFF</color>
+
+    <!-- Base Palette -->
+    <color name="palette_brand">#E8B45A</color>
+    <color name="palette_brand_dark">#C58B32</color>
+
+    <!-- Dark Mode Palette -->
+    <color name="palette_background">#151820</color>
+    <color name="palette_surface">#222633</color>
+    <color name="palette_surface_variant">#2C3140</color>
+    <color name="palette_text_primary">#F5F5F7</color>
+    <color name="palette_text_secondary">#B8BBC7</color>
+
+    <!-- Light Mode Palette -->
+    <color name="palette_light_background">#F8F9FA</color>
+    <color name="palette_light_surface">#FFFFFF</color>
+    <color name="palette_light_surface_variant">#E9ECEF</color>
+    <color name="palette_light_text_primary">#1A1D20</color>
+    <color name="palette_light_text_secondary">#5A626A</color>
+
+    <!-- Status Colors -->
+    <color name="palette_error">#CF6679</color>
+    <color name="palette_success">#81C995</color>
 </resources>

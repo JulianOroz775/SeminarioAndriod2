@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.unicen.seminario.model.Movie
 import ar.edu.unicen.seminario.repository.MovieRepository
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class MovieViewModel(
@@ -21,16 +23,30 @@ class MovieViewModel(
     private val _errorMessage = MutableLiveData<String?>(null)
     val errorMessage: LiveData<String?> = _errorMessage
 
+    private val _isEmptySearch = MutableLiveData(false)
+    val isEmptySearch: LiveData<Boolean> = _isEmptySearch
+
     private var currentPage = 0
     private var totalPages = Int.MAX_VALUE
     private var isLoadingMore = false
     private var isSearching = false
+    private var requestVersion = 0
+
+    private var currentJob: Job? = null
 
     fun loadPopularMovies() {
+        requestVersion++
+        currentJob?.cancel()
+        currentJob = null
+
         isSearching = false
+        isLoadingMore = false
         currentPage = 0
         totalPages = Int.MAX_VALUE
+
         _movies.value = emptyList()
+        _isEmptySearch.value = false
+
         loadPopularPage(1, append = false)
     }
 
@@ -48,10 +64,14 @@ class MovieViewModel(
         _isLoading.value = true
         _errorMessage.value = null
 
-        viewModelScope.launch {
+        val version = requestVersion
+
+        currentJob = viewModelScope.launch {
             try {
                 repository.getPopularMovies(page = page)
                     .onSuccess { result ->
+                        if (version != requestVersion) return@onSuccess
+
                         _movies.value = if (append) {
                             _movies.value.orEmpty() + result.movies
                         } else {
@@ -62,13 +82,16 @@ class MovieViewModel(
                         totalPages = result.totalPages
                     }
                     .onFailure { error ->
-                        _errorMessage.value =
-                            error.message
-                                ?: "No se pudieron cargar las películas"
+                        if (version != requestVersion) return@onFailure
+                        _errorMessage.value = error.message
                     }
+            } catch (error: CancellationException) {
+                throw error
             } finally {
-                isLoadingMore = false
-                _isLoading.value = false
+                if (version == requestVersion) {
+                    isLoadingMore = false
+                    _isLoading.value = false
+                }
             }
         }
     }
@@ -81,34 +104,41 @@ class MovieViewModel(
             return
         }
 
+        requestVersion++
+        currentJob?.cancel()
+        isLoadingMore = false
         isSearching = true
+
+        val version = requestVersion
+
         _isLoading.value = true
         _errorMessage.value = null
+        _isEmptySearch.value = false
 
-        viewModelScope.launch {
+        currentJob = viewModelScope.launch {
             try {
                 repository.searchMovies(cleanQuery)
                     .onSuccess { result ->
-                        _movies.value = result
+                        if (version != requestVersion) return@onSuccess
 
-                        if (result.isEmpty()) {
-                            _errorMessage.value =
-                                "No hay resultados para la búsqueda."
-                        }
+                        _movies.value = result
+                        _isEmptySearch.value = result.isEmpty()
                     }
                     .onFailure { error ->
-                        _errorMessage.value =
-                            error.message
-                                ?: "No se pudo realizar la búsqueda."
+                        if (version != requestVersion) return@onFailure
+                        _errorMessage.value = error.message
                     }
+            } catch (error: CancellationException) {
+                throw error
             } finally {
-                _isLoading.value = false
+                if (version == requestVersion) {
+                    _isLoading.value = false
+                }
             }
         }
     }
 
     fun clearSearch() {
-        isSearching = false
         loadPopularMovies()
     }
 }

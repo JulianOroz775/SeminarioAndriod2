@@ -1,4 +1,3 @@
-
 package ar.edu.unicen.seminario
 
 import android.content.Intent
@@ -6,14 +5,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ar.edu.unicen.seminario.model.Movie
-import ar.edu.unicen.seminario.network.RetrofitInstance
-import ar.edu.unicen.seminario.repository.MovieRepository
 import ar.edu.unicen.seminario.ui.movies.MovieAdapter
-import kotlinx.coroutines.launch
 
 class WishlistActivity : AppCompatActivity() {
 
@@ -41,14 +35,9 @@ class WishlistActivity : AppCompatActivity() {
             },
             showRemoveButton = true,
             onRemoveMovie = { movie ->
-                wishlistManager.toggleFavorite(movie.id)
+                wishlistManager.toggleFavorite(movie)
                 movieAdapter.removeMovie(movie)
-
-                if (wishlistManager.getWishlist().isEmpty()) {
-                    recyclerWishlist.visibility = View.GONE
-                    textWishlistEmpty.text = "Todavía no guardaste películas."
-                    textWishlistEmpty.visibility = View.VISIBLE
-                }
+                updateEmptyState()
             }
         )
 
@@ -61,49 +50,19 @@ class WishlistActivity : AppCompatActivity() {
     }
 
     private fun loadWishlist() {
-        val movieIds = wishlistManager.getWishlist().toList()
+        val movies = wishlistManager.getSavedMovies()
 
-        if (movieIds.isEmpty()) {
-            recyclerWishlist.visibility = View.GONE
-            textWishlistEmpty.visibility = View.VISIBLE
-            return
-        }
+        movieAdapter.updateMovies(movies)
+        updateEmptyState()
+    }
 
-        recyclerWishlist.visibility = View.VISIBLE
-        textWishlistEmpty.visibility = View.GONE
+    private fun updateEmptyState() {
+        val isEmpty = movieAdapter.itemCount == 0
 
-        lifecycleScope.launch {
-            val repository = MovieRepository(
-                RetrofitInstance.movieApi,
-                BuildConfig.TMDB_READ_ACCESS_TOKEN
-            )
+        recyclerWishlist.visibility =
+            if (isEmpty) View.GONE else View.VISIBLE
 
-            val movies = mutableListOf<Movie>()
-
-            for (id in movieIds) {
-                repository.getMovieDetails(id).onSuccess { detail ->
-                    movies.add(
-                        Movie(
-                            id = detail.id,
-                            title = detail.title,
-                            overview = detail.overview,
-                            poster_path = detail.poster_path,
-                            vote_average = detail.vote_average,
-                            genre_ids = detail.genres.map { it.id }
-                        )
-                    )
-                }
-            }
-
-            // Actualizamos la lista con las películas encontradas.
-            movieAdapter.updateMovies(movies)
-
-            if (movies.isEmpty()) {
-                recyclerWishlist.visibility = View.GONE
-                textWishlistEmpty.text =
-                    "No se pudieron cargar las películas guardadas."
-                textWishlistEmpty.visibility = View.VISIBLE
-            }
-        }
+        textWishlistEmpty.visibility =
+            if (isEmpty) View.VISIBLE else View.GONE
     }
 }

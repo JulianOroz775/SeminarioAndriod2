@@ -1,5 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Seminario</string>
-    <string name="hello_word">Hola Mundo!</string>
+    <!-- General -->
+    <string name="app_name">CineScope</string>
+    <string name="hello_word">¡Hola, mundo!</string>
+
+    <!-- Inicio -->
+    <string name="home_title">Descubrí tu próxima película</string>
+    <string name="popular_movies">Películas populares</string>
+    <string name="wishlist">Mi lista</string>
+    <string name="search_movies_hint">Buscar películas…</string>
+    <string name="clear_search">Borrar búsqueda</string>
+
+    <!-- Estados de las listas -->
+    <string name="empty_movies">No hay películas para mostrar.</string>
+    <string name="empty_search">No se encontraron resultados para tu búsqueda.</string>
+    <string name="empty_wishlist">Tu lista de deseados está vacía.</string>
+    <string name="loading_movies">Cargando películas…</string>
+    <string name="loading_details">Cargando detalles de la película…</string>
+    <string name="loading_wishlist">Cargando tu lista…</string>
+
+    <!-- Detalles de película -->
+    <string name="movie_overview">Sinopsis</string>
+    <string name="movie_genres">Géneros</string>
+    <string name="movie_genres_label">Géneros:</string>
+    <string name="no_overview">No hay sinopsis disponible.</string>
+    <string name="wishlist_button_accessibility">Alternar lista de deseados</string>
+    <string name="movie_rating">Calificación: %1$s de 10</string>
+    <string name="movie_poster_description">Portada de %1$s</string>
+    <string name="add_to_wishlist">Agregar a mi lista</string>
+    <string name="remove_from_wishlist">Quitar de mi lista</string>
+
+    <!-- Acciones -->
+    <string name="retry">Reintentar</string>
+    <string name="back">Volver</string>
+
+    <!-- Errores -->
+    <string name="missing_token_error">Falta configurar el token de TMDB en local.properties.</string>
+    <string name="generic_error">Ocurrió un problema al cargar la información.</string>
+    <string name="network_error">No se pudo conectar. Comprobá tu conexión a internet.</string>
+    <string name="timeout_error">La solicitud tardó demasiado. Intentá nuevamente.</string>
+    <string name="server_error">El servidor no está disponible temporalmente. Intentá más tarde.</string>
+    <string name="unknown_error">Ocurrió un error inesperado.</string>
 </resources>

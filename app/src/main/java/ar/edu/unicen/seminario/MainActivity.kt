@@ -20,17 +20,17 @@ import ar.edu.unicen.seminario.repository.MovieRepository
 import ar.edu.unicen.seminario.ui.movies.MovieAdapter
 import ar.edu.unicen.seminario.viewmodel.MovieViewModel
 import ar.edu.unicen.seminario.viewmodel.MovieViewModelFactory
-
+import retrofit2.HttpException
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MovieViewModel
     private lateinit var movieAdapter: MovieAdapter
-
     private lateinit var recyclerMovies: RecyclerView
     private lateinit var progressLoading: ProgressBar
     private lateinit var layoutError: View
     private lateinit var textError: TextView
+    private lateinit var textEmptySearch: TextView
     private lateinit var buttonRetry: Button
     private lateinit var editSearchMovie: EditText
 
@@ -41,7 +41,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val buttonOpenWishlist = findViewById<Button>(R.id.buttonOpenWishlist)
+        val buttonOpenWishlist =
+            findViewById<Button>(R.id.buttonOpenWishlist)
 
         buttonOpenWishlist.setOnClickListener {
             startActivity(Intent(this, WishlistActivity::class.java))
@@ -52,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         progressLoading = findViewById(R.id.progressLoading)
         layoutError = findViewById(R.id.layoutError)
         textError = findViewById(R.id.textError)
+        textEmptySearch = findViewById(R.id.textEmptySearch)
         buttonRetry = findViewById(R.id.buttonRetry)
 
         movieAdapter = MovieAdapter(
@@ -63,7 +65,6 @@ class MainActivity : AppCompatActivity() {
         )
 
         val layoutManager = LinearLayoutManager(this)
-
         recyclerMovies.layoutManager = layoutManager
         recyclerMovies.adapter = movieAdapter
 
@@ -81,7 +82,9 @@ class MainActivity : AppCompatActivity() {
                         val lastVisibleItem =
                             layoutManager.findLastVisibleItemPosition()
 
-                        if (lastVisibleItem >= totalItems - 3) {
+                        if (totalItems > 0 &&
+                            lastVisibleItem >= totalItems - 3
+                        ) {
                             viewModel.loadNextPopularPage()
                         }
                     }
@@ -90,9 +93,8 @@ class MainActivity : AppCompatActivity() {
         )
 
         val token = BuildConfig.TMDB_READ_ACCESS_TOKEN
-
         if (token.isBlank()) {
-            showError("Falta configurar el token de TMDB en local.properties.")
+            showError(getString(R.string.missing_token_error))
             return
         }
 
@@ -102,7 +104,6 @@ class MainActivity : AppCompatActivity() {
         )
 
         val factory = MovieViewModelFactory(repository)
-
         viewModel = ViewModelProvider(this, factory)
             .get(MovieViewModel::class.java)
 
@@ -164,7 +165,6 @@ class MainActivity : AppCompatActivity() {
     private fun observeViewModel() {
         viewModel.movies.observe(this) { movies ->
             movieAdapter.updateMovies(movies)
-
             recyclerMovies.visibility =
                 if (movies.isEmpty()) View.GONE else View.VISIBLE
         }
@@ -180,10 +180,34 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.errorMessage.observe(this) { message ->
             if (!message.isNullOrBlank()) {
-                showError(message)
+                showError(mapErrorMessage(message))
             } else {
                 layoutError.visibility = View.GONE
             }
+        }
+
+        viewModel.isEmptySearch.observe(this) { isEmpty ->
+            textEmptySearch.visibility =
+                if (isEmpty) View.VISIBLE else View.GONE
+        }
+    }
+
+    private fun mapErrorMessage(message: String): String {
+        return when {
+            message.contains("Unable to resolve host", ignoreCase = true) ||
+                message.contains("Failed to connect", ignoreCase = true) ->
+                getString(R.string.network_error)
+
+            message.contains("timeout", ignoreCase = true) ->
+                getString(R.string.timeout_error)
+
+            message.contains("500") ||
+                message.contains("502") ||
+                message.contains("503") ||
+                message.contains("504") ->
+                getString(R.string.server_error)
+
+            else -> getString(R.string.unknown_error)
         }
     }
 
@@ -191,6 +215,7 @@ class MainActivity : AppCompatActivity() {
         textError.text = message
         layoutError.visibility = View.VISIBLE
         recyclerMovies.visibility = View.GONE
+        textEmptySearch.visibility = View.GONE
         progressLoading.visibility = View.GONE
     }
 

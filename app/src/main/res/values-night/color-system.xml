@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="brandColor">@color/palette_brand</color>
 
-    <color name="brandColor">@color/blue</color>
-    <color name="textPrimaryColor">@color/white</color>
+    <color name="screenBackgroundColor">@color/palette_background</color>
+    <color name="surfaceColor">@color/palette_surface</color>
+    <color name="surfaceVariantColor">@color/palette_surface_variant</color>
 
+    <color name="textPrimaryColor">@color/palette_text_primary</color>
+    <color name="textSecondaryColor">@color/palette_text_secondary</color>
+
+    <color name="errorColor">@color/palette_error</color>
+    <color name="successColor">@color/palette_success</color>
 </resources>

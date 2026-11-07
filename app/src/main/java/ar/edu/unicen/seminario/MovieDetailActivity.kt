@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import ar.edu.unicen.seminario.model.Movie
 import ar.edu.unicen.seminario.network.RetrofitInstance
 import ar.edu.unicen.seminario.repository.MovieRepository
 import ar.edu.unicen.seminario.viewmodel.MovieDetailViewModel
@@ -33,19 +34,36 @@ class MovieDetailActivity : AppCompatActivity() {
             finish()
             return
         }
+
         fun updateWishlistButton() {
             buttonWishlist.text = if (wishlistManager.isFavorite(movieId)) {
-                "♥ Quitar de deseados"
+                getString(R.string.remove_from_wishlist)
             } else {
-                "♡ Agregar a deseados"
+                getString(R.string.add_to_wishlist)
             }
+
+            buttonWishlist.contentDescription =
+                getString(R.string.wishlist_button_accessibility)
         }
 
         updateWishlistButton()
 
         buttonWishlist.setOnClickListener {
-            wishlistManager.toggleFavorite(movieId)
-            updateWishlistButton()
+            val movie = viewModel.movie.value
+
+            if (movie != null) {
+                val savedMovie = Movie(
+                    id = movie.id,
+                    title = movie.title,
+                    overview = movie.overview,
+                    poster_path = movie.poster_path,
+                    vote_average = movie.vote_average,
+                    genre_ids = movie.genres.map { it.id }
+                )
+
+                wishlistManager.toggleFavorite(savedMovie)
+                updateWishlistButton()
+            }
         }
 
         val imagePoster = findViewById<ImageView>(R.id.imageDetailPoster)
@@ -68,11 +86,25 @@ class MovieDetailActivity : AppCompatActivity() {
         viewModel.movie.observe(this) { movie ->
             if (movie != null) {
                 textTitle.text = movie.title
-                textRating.text = "Calificación: %.1f/10".format(movie.vote_average)
-                textGenres.text = "Géneros: " +
+                imagePoster.contentDescription = getString(
+                    R.string.movie_poster_description,
+                    movie.title
+                )
+
+                textRating.text = getString(
+                    R.string.movie_rating,
+                    String.format(
+                        java.util.Locale.getDefault(),
+                        "%.1f",
+                        movie.vote_average
+                    )
+                )
+
+                textGenres.text = getString(R.string.movie_genres_label) + " " +
                         movie.genres.joinToString(", ") { it.name }
+
                 textOverview.text = movie.overview.ifBlank {
-                    "No hay sinopsis disponible."
+                    getString(R.string.no_overview)
                 }
 
                 val posterUrl = movie.poster_path?.let {
@@ -93,9 +125,25 @@ class MovieDetailActivity : AppCompatActivity() {
             progress.visibility = if (loading) View.VISIBLE else View.GONE
         }
 
-        viewModel.errorMessage.observe(this) { message ->
-            if (message != null) {
-                textError.text = message
+        viewModel.error.observe(this) { error ->
+            if (error != null) {
+                textError.text = when (error) {
+                    is java.net.UnknownHostException,
+                    is java.net.ConnectException -> getString(R.string.network_error)
+
+                    is java.net.SocketTimeoutException -> getString(R.string.timeout_error)
+
+                    is retrofit2.HttpException -> {
+                        if (error.code() >= 500) {
+                            getString(R.string.server_error)
+                        } else {
+                            getString(R.string.generic_error)
+                        }
+                    }
+
+                    else -> getString(R.string.unknown_error)
+                }
+
                 layoutError.visibility = View.VISIBLE
             } else {
                 layoutError.visibility = View.GONE

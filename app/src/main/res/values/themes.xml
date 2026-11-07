@@ -1,9 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Seminario" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
+
+    <style name="Base.Theme.Seminario"
+        parent="Theme.Material3.DayNight.NoActionBar">
+
         <item name="colorPrimary">@color/brandColor</item>
+        <item name="colorOnPrimary">@color/black</item>
+
+        <item name="colorSecondary">@color/brandColor</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <item name="android:windowBackground">@color/screenBackgroundColor</item>
+        <item name="android:colorAccent">@color/brandColor</item>
+
     </style>
 
     <style name="Theme.Seminario" parent="Base.Theme.Seminario" />
+
 </resources>
